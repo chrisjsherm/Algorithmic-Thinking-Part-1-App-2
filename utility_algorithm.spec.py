@@ -25,7 +25,7 @@ class TestUtilityAlgorithm(unittest.TestCase):
         my_graph[2] = set([1])
         my_graph[3] = set([4])
         my_graph[4] = set([3])
-        self.assertEqual(utility_algorithm.fast_targeted_order(my_graph),
+        self.assertItemsEqual(utility_algorithm.fast_targeted_order(my_graph),
             [1, 0, 2, 3, 4])
 
 suite = unittest.TestLoader().loadTestsFromTestCase(TestUtilityAlgorithm)

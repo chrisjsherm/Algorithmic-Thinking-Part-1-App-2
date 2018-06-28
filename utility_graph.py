@@ -221,3 +221,12 @@ def random_order(a_graph):
         graph_copy.pop(node, -1)
 
     return node_list
+
+def delete_node(ugraph, node):
+    """
+    Delete a node from an undirected graph.
+    """
+    neighbors = ugraph[node]
+    ugraph.pop(node)
+    for neighbor in neighbors:
+        ugraph[neighbor].remove(node)

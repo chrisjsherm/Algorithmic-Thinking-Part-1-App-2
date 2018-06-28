@@ -128,9 +128,8 @@ def fast_targeted_order(ugraph):
 
     list_decreasing_degrees = []
 
-    for k in xrange(len(ugraph) - 1, 0, -1):
+    for k in xrange(len(ugraph) - 1, -1, -1):
         while len(degree_sets[k]) != 0:
-            print('k equals ', str(k))
             node = degree_sets[k].pop()
             node_neighbors = ugraph[node]
             for neighbor in node_neighbors:
@@ -139,7 +138,7 @@ def fast_targeted_order(ugraph):
                 degree_sets[neighbor_degree - 1].add(neighbor)
             
             list_decreasing_degrees.append(node)
-            ugraph.pop(node)
+            utility_graph.delete_node(ugraph, node)
 
     return list_decreasing_degrees
 
