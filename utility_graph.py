@@ -213,7 +213,7 @@ def random_order(a_graph):
     node_list = []
 
     # Copy dictionary to avoid removing elements from input parameter.
-    graph_copy = dict((a_key, a_value) for a_key, a_value in a_graph.items())
+    graph_copy = copy_graph(a_graph)
 
     while len(graph_copy) != 0:
         node = random.choice(graph_copy.keys())
@@ -221,6 +221,14 @@ def random_order(a_graph):
         graph_copy.pop(node, -1)
 
     return node_list
+
+
+def copy_graph(a_graph):
+    """
+    Make a copy of a graph
+    """
+    return dict((a_key, set(a_value)) for a_key, a_value in a_graph.items())
+
 
 def delete_node(ugraph, node):
     """

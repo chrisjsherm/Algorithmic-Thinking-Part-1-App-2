@@ -17,7 +17,6 @@ class TestUtilityAlgorithm(unittest.TestCase):
         """
         pass
 
-    # TODO: Figure out why all elements are not added to list.
     def test_fast_targeted_order(self):
         my_graph = {}
         my_graph[0] = set([1])

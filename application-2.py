@@ -7,6 +7,11 @@ import utility_graph
 import random
 import bfs
 import matplotlib.pyplot as plt
+import distutils.dir_util
+import utility_profiler
+import provided_targeted_order
+import os
+import utility_profiler
 
 
 class X_Axis_Value:
@@ -89,9 +94,114 @@ def question_1(x_axis_value):
     plt.legend(loc='upper right')
     plt.show()
 
-#question_1(X_Axis_Value.Nodes_Removed)
+
+def question_3():
+    """
+    Run the provided targeted_order and your implementation of 
+    fast_targeted_order on a sequence of UPA graphs with n in 
+    (10, 1000, 10) and m=5. Use the time module (or your favorite 
+    Python timing utility) to compute the running times of these 
+    functions. 
+
+    Then, plot these running times (vertical axis) as 
+    a function of the number of nodes nn (horizontal axis) using 
+    a standard plot. Your plot should consist of two curves showing 
+    the results of your timings. Remember to format your plot 
+    appropriately and include a legend. The title of your plot 
+    should indicate the implementation of Python (desktop Python 
+    vs. CodeSkulptor) used to generate the timing results.
+    """
+    my_graph = {}
+    my_graph[0] = set([1])
+    my_graph[1] = set([0, 2])
+    my_graph[2] = set([1])
+    my_graph[3] = set([4])
+    my_graph[4] = set([3])
+
+    n_values = xrange(10, 1000, 10)
+    m_value = 5
+
+    provided_target_dirname = 'stats_provided_target'
+    provided_target_expression = 'provided_targeted_order' + \
+        '.targeted_order(utility_algorithm.dpa_algorithm({0}, m_value, False))'
+    provided_target_stats = utility_profiler.collect_stats(provided_target_dirname,
+                                                           n_values,
+                                                           provided_target_expression,
+                                                           {'m_value': m_value})
+    provided_target_stats.print_stats()
+
+    fast_target_dirname = 'stats_fast_target'
+    fast_target_expression = 'utility_algorithm' + \
+        '.fast_targeted_order(utility_algorithm.dpa_algorithm({0}, m_value, False))'
+    fast_target_stats = utility_profiler.collect_stats(fast_target_dirname,
+                                                       n_values,
+                                                       fast_target_expression,
+                                                       {'m_value': m_value})
+    fast_target_stats.print_stats()
+    for filename in os.listdir(fast_target_dirname):
+        print(filename)
+
+
+def question_3_profile():
+    """
+    Run the provided targeted_order and your implementation of 
+    fast_targeted_order on a sequence of UPA graphs with n in 
+    (10, 1000, 10) and m=5. Use the time module (or your favorite 
+    Python timing utility) to compute the running times of these 
+    functions. 
+
+    Then, plot these running times (vertical axis) as 
+    a function of the number of nodes nn (horizontal axis) using 
+    a standard plot. Your plot should consist of two curves showing 
+    the results of your timings. Remember to format your plot 
+    appropriately and include a legend. The title of your plot 
+    should indicate the implementation of Python (desktop Python 
+    vs. CodeSkulptor) used to generate the timing results.
+    """
+    my_graph = {}
+    my_graph[0] = set([1])
+    my_graph[1] = set([0, 2])
+    my_graph[2] = set([1])
+    my_graph[3] = set([4])
+    my_graph[4] = set([3])
+
+    n_values = xrange(10, 1000, 10)
+    m_value = 5
+
+    for n in n_values:
+        ugraph = utility_algorithm.dpa_algorithm(
+            n, m_value, False
+        )
+        call_provided_targeted_order(ugraph)
+        call_fast_targeted_order(ugraph)
+
+
+@utility_profiler.profile_func
+def call_provided_targeted_order(ugraph):
+    """
+    Call the provided targeted order function with the supplied ugraph and
+    profile the running time.
+
+    @param ugraph: Dictionary representation of an undirected graph.
+    """
+    provided_targeted_order.targeted_order(ugraph)
+
+
+@utility_profiler.profile_func
+def call_fast_targeted_order(ugraph):
+    """
+    Call the provided targeted order function with the supplied ugraph and
+    profile the running time.
+
+    @param ugraph: Dictionary representation of an undirected graph.
+    """
+    utility_algorithm.fast_targeted_order(ugraph)
+
+# question_1(X_Axis_Value.Nodes_Removed)
 
 # Question 2.
-question_1(X_Axis_Value.Nodes_Remaining)
+# question_1(X_Axis_Value.Nodes_Remaining)
 
 
+question_3_profile()
+utility_profiler.print_prof_data()
