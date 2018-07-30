@@ -19,7 +19,7 @@ class X_Axis_Value:
     Nodes_Remaining = 2
 
 
-def question_1(x_axis_value):
+def question_1(x_axis_value, is_attack_targeted = False):
     """
     Determine the probability "p" such that the ER graph computed using this
     probability has approximately the same number of edges as the computer
@@ -63,14 +63,21 @@ def question_1(x_axis_value):
           str(len(upa_graph)) + ' nodes and ' +
           str(utility_graph.count_edges(upa_graph, False)) + ' edges.')
 
-    attack_order = utility_graph.random_order(network_graph)
-    network_resilience = bfs.compute_resilience(network_graph, attack_order)
+    if (is_attack_targeted):
+        network_attack_order = utility_algorithm.fast_targeted_order(
+            utility_graph.copy_graph(network_graph))
+        er_attack_order = utility_algorithm.fast_targeted_order(
+            utility_graph.copy_graph(er_graph))
+        upa_attack_order = utility_algorithm.fast_targeted_order(
+            utility_graph.copy_graph(upa_graph))
+    else:
+        network_attack_order = utility_graph.random_order(network_graph)
+        er_attack_order = utility_graph.random_order(er_graph)
+        upa_attack_order = utility_graph.random_order(upa_graph)
 
-    attack_order = utility_graph.random_order(er_graph)
-    er_resilience = bfs.compute_resilience(er_graph, attack_order)
-
-    attack_order = utility_graph.random_order(upa_graph)
-    upa_resilience = bfs.compute_resilience(upa_graph, attack_order)
+    network_resilience = bfs.compute_resilience(network_graph, network_attack_order)
+    er_resilience = bfs.compute_resilience(er_graph, er_attack_order)
+    upa_resilience = bfs.compute_resilience(upa_graph, upa_attack_order)
 
     if x_axis_value == X_Axis_Value.Nodes_Removed:
         plt.xlabel('Nodes Removed')
@@ -142,6 +149,28 @@ def question_3():
         print(filename)
 
 
+@utility_profiler.profile_func
+def call_provided_targeted_order(ugraph):
+    """
+    Call the provided targeted order function with the supplied ugraph and
+    profile the running time.
+
+    @param ugraph: Dictionary representation of an undirected graph.
+    """
+    provided_targeted_order.targeted_order(ugraph)
+
+
+@utility_profiler.profile_func
+def call_fast_targeted_order(ugraph):
+    """
+    Call the provided targeted order function with the supplied ugraph and
+    profile the running time.
+
+    @param ugraph: Dictionary representation of an undirected graph.
+    """
+    utility_algorithm.fast_targeted_order(ugraph)
+
+
 def question_3_profile():
     """
     Run the provided targeted_order and your implementation of 
@@ -175,33 +204,44 @@ def question_3_profile():
         call_provided_targeted_order(ugraph)
         call_fast_targeted_order(ugraph)
 
+    profile_data = utility_profiler.print_prof_data()
 
-@utility_profiler.profile_func
-def call_provided_targeted_order(ugraph):
-    """
-    Call the provided targeted order function with the supplied ugraph and
-    profile the running time.
+    plt.title('Targeted Order Running Time (Desktop Python)')
+    plt.ylabel('Running Time (seconds)')
+    plt.xlabel('Node Count')
+    plt.plot(n_values, profile_data['call_provided_targeted_order'][1], '-r', label='Provided Targeted Order')
+    plt.plot(n_values, profile_data['call_fast_targeted_order'][1], '-b', label='Fast Targeted Order')
+    plt.legend(loc='upper right')
+    plt.show()
 
-    @param ugraph: Dictionary representation of an undirected graph.
-    """
-    provided_targeted_order.targeted_order(ugraph)
-
-
-@utility_profiler.profile_func
-def call_fast_targeted_order(ugraph):
-    """
-    Call the provided targeted order function with the supplied ugraph and
-    profile the running time.
-
-    @param ugraph: Dictionary representation of an undirected graph.
-    """
-    utility_algorithm.fast_targeted_order(ugraph)
-
+# Question 1:
 # question_1(X_Axis_Value.Nodes_Removed)
 
-# Question 2.
+# Question 2:
+# The ER and UPA graphs are resilient under random attacks as the first
+# 20% of nodes are removed. Each has a largest connected component roughly
+# equal to the number of nodes remaining while the first 20% of nodes are
+# removed. The Network graph's largest connected component drops down to about
+# 75% of the number of nodes remaining once about 12-15% of its nodes are
+# removed. 
 # question_1(X_Axis_Value.Nodes_Remaining)
 
 
-question_3_profile()
-utility_profiler.print_prof_data()
+# Question 3:
+# targeted_order => O(n) = n^2
+# fast_targeted_order => O(n) = n
+# question_3_profile()
+
+# Question 4:
+# question_1(X_Axis_Value.Nodes_Remaining, True)
+
+# Question 5:
+# The ER graph is resilient under targeted attacks as the first 20% of its
+# nodes are removed. Neither the UPA graph nor the Network graph are 
+# resilient as the first 20% of nodes are removed.
+
+# Question 6:
+# While using the randomized graph from the ER algorithm gives us a graph
+# resilient to targeted attacks, we cannot reccommend network designers 
+# always use this random model. Networks have other considerations, such
+# as latency, to consider when designing networks.

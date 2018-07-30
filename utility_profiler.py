@@ -85,6 +85,7 @@ def print_prof_data():
         avg_time = sum(data[1]) / len(data[1])
         print "Function %s called %d times. " % (fname, data[0]),
         print 'Execution time max: %.3f, average: %.3f' % (max_time, avg_time)
+    return PROF_DATA
 
 def clear_prof_data():
     global PROF_DATA
